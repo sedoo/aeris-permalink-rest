@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -52,7 +53,7 @@ public class PermalinkRestTest {
 	Resource managerJwtFile;
 	
 	private String damienBoulangerOrcid = "0000-0001-6935-1106";
-
+	
 	@Test
 	public void testIsAlive() throws Exception {
 		mvc.perform(get("/admin/isalive")).andDo(print()).andExpect(status().isOk())
@@ -162,7 +163,5 @@ public class PermalinkRestTest {
 	private int countPermalinks(String content) {
 		return StringUtils.countMatches(content, "suffix");
 	}
-
-
 
 }

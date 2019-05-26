@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,18 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.aeris.permalink.rest.config.Profiles;
+import fr.aeris.permalink.rest.dao.PermalinkDao;
 import fr.aeris.permalink.rest.dao.PermalinkRepository;
 import fr.aeris.permalink.rest.domain.Permalink;
 
@@ -50,6 +53,9 @@ public class PermalinkRestMongoScenario {
 	
 	@Autowired
 	PermalinkRepository repository;
+	
+	@Autowired
+	PermalinkDao dao;
 	
 	@Value("classpath:francois.andre.jwt")
 	Resource adminJwtFile;
@@ -172,7 +178,22 @@ public class PermalinkRestMongoScenario {
 	@Before
 	public final void init() {
 		repository.deleteAll();
-		
+		dao.save(create("google", "http://www.google.com","1234"));
+		dao.save(create("monde", "http://www.lemonde.fr","12"));
+		dao.save(create("equipe", "http://www.lequipe.fr","12"));
+		dao.save(create("iagos", "http://www.iagos-data.fr/","0000-0001-6935-1106"));
+	}
+	
+	private Permalink create(String suffix, String url, String... orcids ) {
+		Permalink permalink = new Permalink();
+		permalink.setSuffix(suffix);
+		permalink.setUrl(url);
+		ArrayList<String> managers = new ArrayList<>();
+		for (String orcid : orcids) {
+			managers.add(orcid);
+		}
+		permalink.setManagerIds(managers);
+		return permalink;
 	}
 
 }

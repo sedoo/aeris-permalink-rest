@@ -1,8 +1,10 @@
 package fr.aeris.permalink.rest.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -24,29 +26,43 @@ public class PermalinkDaoMongoImpl extends AbstractPermalinkDao{
 
 	@Override
 	public boolean redirects(String suffix) {
-		return false;
+		Permalink findBySuffix = findBySuffix(suffix);
+		if (findBySuffix != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public Permalink findBySuffix(String suffix) {
-		return permalinkRepository.findBySuffix(suffix);
+		return permalinkRepository.findBySuffix(suffix.toLowerCase());
 	}
 
 	@Override
 	public List<Permalink> findAllByOrcid(String orcid) {
-		return new ArrayList<>();
+		return permalinkRepository.findByManagerIdsIn(Collections.singletonList(orcid));
 	}
 
 	@Override
 	public void deleteBySuffix(String suffix) {
-		// TODO Auto-generated method stub
-		
+		Permalink existingPermalink = findBySuffix(suffix);
+		if (existingPermalink != null) {
+			permalinkRepository.delete(existingPermalink);
+		}
 	}
 
 	@Override
 	public void save(Permalink permalink) {
-		// TODO Auto-generated method stub
-		
+		permalink.setSuffix(permalink.getSuffix().toLowerCase());
+		if (StringUtils.isEmpty(permalink.getSuffix())) {
+			return;
+		}
+		if (StringUtils.isEmpty(permalink.getUrl())) {
+			return;
+		}
+		deleteBySuffix(permalink.getSuffix());
+		permalinkRepository.save(permalink);
 	}
 	
 	
