@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sun May 26 14:42:50 CEST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-016a-f42a-40b6-000027e81ac0 
+on database directory memory:/home/fandrelocal/eclipse-workspace/aeris-permalink-rest/testdb with class loader sun.misc.Launcher$AppClassLoader@49c2faae 
+Loaded from file:/home/fandrelocal/.m2/repository/org/apache/derby/derby/10.13.1.1/derby-10.13.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_201-b09
+user.dir=/home/fandrelocal/eclipse-workspace/aeris-permalink-rest
+os.name=Linux
+os.arch=amd64
+os.version=3.10.0-957.10.1.el7.x86_64
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
