@@ -1,4 +1,4 @@
-package fr.aeris.permalink.rest.service;
+package fr.aeris.permalink.rest.service.v1_0;
 
 import java.util.List;
 
@@ -17,14 +17,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.aeris.permalink.rest.dao.PermalinkDao;
+import fr.aeris.permalink.rest.domain.Offer;
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 import fr.aeris.permalink.rest.habilitation.ApplicationUser;
 import fr.aeris.permalink.rest.habilitation.Roles;
+import fr.aeris.permalink.rest.service.v1_0.exception.BadRequestException;
+import fr.aeris.permalink.rest.service.v1_0.exception.ForbiddenException;
+import fr.aeris.permalink.rest.service.v1_0.exception.ServiceOfferLimitReachedException;
+import fr.aeris.permalink.rest.service.v1_0.exception.UnexistingPermalinkException;
 
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/admin")
+@RequestMapping(value = "/admin/v1_0")
 public class PermalinkService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PermalinkService.class);
@@ -35,6 +41,19 @@ public class PermalinkService {
 	@RequestMapping(value = "/isalive", method = RequestMethod.GET)
 	public String isalive() {
 		return "yes";
+	}
+	
+	@RequestMapping(value = "/statistics", method = RequestMethod.GET)
+	public Statistics statistics() {
+		
+		return permalinkDao.getStatistics();
+	}
+	
+	@RequestMapping(value = "/offer", method = RequestMethod.GET)
+	public Offer offer() {
+		Offer result = new Offer();
+		result.setMaxPermalinks(PermalinkDao.USER_PERMALINK_LIMITS);
+		return result;
 	}
 
 	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE})

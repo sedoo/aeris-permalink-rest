@@ -1,6 +1,7 @@
-package fr.aeris.permalink.rest;
+package fr.aeris.permalink.rest.service.v1_0;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,6 +40,7 @@ import fr.aeris.permalink.rest.config.Profiles;
 import fr.aeris.permalink.rest.dao.PermalinkDao;
 import fr.aeris.permalink.rest.dao.PermalinkRepository;
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 
 
 @RunWith(SpringRunner.class)
@@ -67,20 +69,20 @@ public class PermalinkRestMongoScenario {
 
 	@Test
 	public void testIsAlive() throws Exception {
-		mvc.perform(get("/admin/isalive")).andDo(print()).andExpect(status().isOk())
+		mvc.perform(get("/admin/v1_0/isalive")).andDo(print()).andExpect(status().isOk())
         .andExpect(content().string(containsString("yes")));
 	}
 	
 	
 	@Test
 	public void listPermalinkWithoutAuthorisation() throws Exception {
-		mvc.perform(get("/admin/list")).andDo(print()).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+		mvc.perform(get("/admin/v1_0/list")).andDo(print()).andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
 	}
 	
 	@Test
 	public void listPermalinkAsAdmin() throws Exception {
 		String token = IOUtils.toString(adminJwtFile.getInputStream(), Charset.defaultCharset());
-		MvcResult result  = mvc.perform(get("/admin/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
+		MvcResult result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
 		String content = result.getResponse().getContentAsString();
 		Assert.assertEquals("Il doit y avoir 4 éléments", 4, countPermalinks(content));
 	}
@@ -88,7 +90,7 @@ public class PermalinkRestMongoScenario {
 	@Test
 	public void listPermalinkAsManager() throws Exception {
 		String token = IOUtils.toString(managerJwtFile.getInputStream(), Charset.defaultCharset());
-		MvcResult result  = mvc.perform(get("/admin/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
+		MvcResult result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
 		String content = result.getResponse().getContentAsString();
 		Assert.assertEquals("Il doit y avoir 1 éléments", 1, countPermalinks(content));
 	}
@@ -100,7 +102,7 @@ public class PermalinkRestMongoScenario {
 		newPermalink.setUrl("www.amazon.fr");
 		newPermalink.setSuffix("amaZon");
 		String managerToken = IOUtils.toString(managerJwtFile.getInputStream(), Charset.defaultCharset());
-		MvcResult result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		MvcResult result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		String content = result.getResponse().getContentAsString();
 		Assert.assertEquals("The response must contain 1 element", 1, countPermalinks(content));
 		
@@ -108,18 +110,18 @@ public class PermalinkRestMongoScenario {
 		String json = mapper.writeValueAsString(newPermalink);
 		
 		String token = IOUtils.toString(managerJwtFile.getInputStream(), Charset.defaultCharset());
-		mvc.perform(post("/admin/add").contentType(MediaType.APPLICATION_JSON_UTF8)
+		mvc.perform(post("/admin/v1_0/add").contentType(MediaType.APPLICATION_JSON_UTF8)
 		        .content(json).header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
 		
-		result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		content = result.getResponse().getContentAsString();
 		Assert.assertEquals("The response must contain 2 elements", 2, countPermalinks(content));
 		
 		mvc.perform(get("/Amazon")).andExpect(status().is(HttpStatus.FOUND.value())).andReturn();
 		
-		mvc.perform(delete("/admin/delete/amazoN").header("Authorization", managerToken)).andExpect(status().isOk()).andReturn();
+		mvc.perform(delete("/admin/v1_0/delete/amazoN").header("Authorization", managerToken)).andExpect(status().isOk()).andReturn();
 		
-		result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		content = result.getResponse().getContentAsString();
 		Assert.assertEquals("The response must contain 1 element", 1, countPermalinks(content));
 		
@@ -129,25 +131,33 @@ public class PermalinkRestMongoScenario {
 	public void xaddAndRemoveManager() throws Exception {
 		String adminToken = IOUtils.toString(adminJwtFile.getInputStream(), Charset.defaultCharset());
 		String managerToken = IOUtils.toString(managerJwtFile.getInputStream(), Charset.defaultCharset());
-		MvcResult result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		MvcResult result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		String content = result.getResponse().getContentAsString();
 		Assert.assertEquals("The response must contain 1 element", 1, countPermalinks(content));
-		mvc.perform(get("/admin/addmanager/monde/"+damienBoulangerOrcid).header("Authorization", adminToken)).andDo(print()).andExpect(status().isOk()).andReturn();
-		result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		mvc.perform(get("/admin/v1_0/addmanager/monde/"+damienBoulangerOrcid).header("Authorization", adminToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		content = result.getResponse().getContentAsString();		
 		Assert.assertEquals("The response must contain 2 elements", 2, countPermalinks(content));
-		mvc.perform(get("/admin/deletemanager/monde/"+damienBoulangerOrcid).header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
-		result  = mvc.perform(get("/admin/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		mvc.perform(get("/admin/v1_0/deletemanager/monde/"+damienBoulangerOrcid).header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
+		result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", managerToken)).andDo(print()).andExpect(status().isOk()).andReturn();
 		content = result.getResponse().getContentAsString();		
 		Assert.assertEquals("The response must contain 1 element", 1, countPermalinks(content));
 	}
 	
-	
+	@Test
+	public void testStatistiques() throws Exception {
+		MvcResult result  = mvc.perform(get("/admin/v1_0/statistics")).andExpect(status().isOk()).andReturn();
+		String content = result.getResponse().getContentAsString();
+		ObjectMapper mapper = new ObjectMapper();
+		Statistics statistics = mapper.readValue(content, Statistics.class);
+		Assert.assertEquals(statistics.getPermalinks(), 4);
+		Assert.assertEquals(statistics.getUsers(), 3);
+	}
 	
 	@Test
 	public void zDeleteUnExistingPermalink() throws Exception {
 		String token = IOUtils.toString(adminJwtFile.getInputStream(), Charset.defaultCharset());
-		mvc.perform(delete("/admin/delete/yoyoyo").header("Authorization", token)).andDo(print()).andExpect(status().is(HttpStatus.BAD_REQUEST.value())).andReturn();
+		mvc.perform(delete("/admin/v1_0/delete/yoyoyo").header("Authorization", token)).andDo(print()).andExpect(status().is(HttpStatus.BAD_REQUEST.value())).andReturn();
 	}
 	
 	@Test
@@ -161,11 +171,11 @@ public class PermalinkRestMongoScenario {
 	public void zDeletePermalinkAsManager() throws Exception {
 		String token = IOUtils.toString(adminJwtFile.getInputStream(), Charset.defaultCharset());
 		
-		MvcResult result  = mvc.perform(get("/admin/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
+		MvcResult result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
 		String content = result.getResponse().getContentAsString();
 		int initialCount = countPermalinks(content);
-		mvc.perform(delete("/admin/delete/monde").header("Authorization", token)).andDo(print()).andExpect(status().isOk());
-		result  = mvc.perform(get("/admin/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
+		mvc.perform(delete("/admin/v1_0/delete/monde").header("Authorization", token)).andDo(print()).andExpect(status().isOk());
+		result  = mvc.perform(get("/admin/v1_0/list").header("Authorization", token)).andDo(print()).andExpect(status().isOk()).andReturn();
 		content = result.getResponse().getContentAsString();
 		int finalCount = countPermalinks(content);
 		Assert.assertEquals(initialCount-1, finalCount);

@@ -12,8 +12,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Document(collection = "permalinks", language = "english")
+@Document(collection = Permalink.PERMALINK_COLLECTION_NAME, language = "english")
 public class Permalink {
+	
+	public final static String PERMALINK_COLLECTION_NAME = "permalinks";
 	
 	@Id
 	private String id;

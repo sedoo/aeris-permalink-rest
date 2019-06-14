@@ -3,10 +3,11 @@ package fr.aeris.permalink.rest.dao;
 import java.util.List;
 
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 
 public interface PermalinkDao {
 	
-	int USER_PERMALINK_LIMITS =50;
+	int USER_PERMALINK_LIMITS =100;
 
 	List<Permalink> findAll();
 
@@ -21,5 +22,7 @@ public interface PermalinkDao {
 	void deleteBySuffix(String suffix);
 	
 	void save(Permalink permalink);
+
+	Statistics getStatistics();
 
 }

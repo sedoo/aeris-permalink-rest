@@ -1,13 +1,16 @@
 package fr.aeris.permalink.rest.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import fr.aeris.permalink.rest.config.Profiles;
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 
 @Component
 @Profile(Profiles.FAKE_PROFILE)
@@ -92,6 +95,22 @@ public class FakePermalinkDao extends AbstractPermalinkDao{
 		}
 		permalinks.add(permalink);
 		
+	}
+	
+	@Override
+	public Statistics getStatistics() {
+		Statistics result = new Statistics();
+		Set<String> orcids = new HashSet<>();
+		int permalinkNumber = 0;
+		for (Permalink permalink : permalinks) {
+			permalinkNumber++;
+			for (String manager : permalink.getManagerIds()) {
+				orcids.add(manager);
+			}
+		}
+		result.setPermalinks(permalinkNumber);
+		result.setUsers(orcids.size());
+		return result;
 	}
 
 	

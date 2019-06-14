@@ -1,16 +1,17 @@
 package fr.aeris.permalink.rest.dao;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import fr.aeris.permalink.rest.config.Profiles;
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 
 @Component
 @Profile("!"+Profiles.FAKE_PROFILE)
@@ -18,6 +19,10 @@ public class PermalinkDaoMongoImpl extends AbstractPermalinkDao{
 
 	@Autowired
 	PermalinkRepository permalinkRepository;
+	
+	@Autowired
+	MongoTemplate mongoTemplate;
+
 	
 	@Override
 	public List<Permalink> findAll() {
@@ -64,6 +69,17 @@ public class PermalinkDaoMongoImpl extends AbstractPermalinkDao{
 		deleteBySuffix(permalink.getSuffix());
 		permalinkRepository.save(permalink);
 	}
+
+	@Override
+	public Statistics getStatistics() {
+		Statistics result = new Statistics();
+		result.setPermalinks((int) permalinkRepository.count());
+		List aux = mongoTemplate.getCollection(Permalink.PERMALINK_COLLECTION_NAME).distinct("managerIds");
+		result.setUsers(aux.size());
+		return result;
+	}
+	
+	
 	
 	
 }

@@ -1,13 +1,16 @@
 package fr.aeris.permalink.rest.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.scheduling.annotation.Scheduled;
 
 import fr.aeris.permalink.rest.domain.Permalink;
+import fr.aeris.permalink.rest.domain.Statistics;
 
 public class CachedPermalinkDao extends AbstractPermalinkDao {
 
@@ -98,7 +101,22 @@ public class CachedPermalinkDao extends AbstractPermalinkDao {
 		permalinks.add(permalink);
 		suffixes.add(permalink.getSuffix());
 		dao.save(permalink);
-		
+	}
+
+	@Override
+	public Statistics getStatistics() {
+		Statistics result = new Statistics();
+		Set<String> orcids = new HashSet<>();
+		int permalinkNumber = 0;
+		for (Permalink permalink : permalinks) {
+			permalinkNumber++;
+			for (String manager : permalink.getManagerIds()) {
+				orcids.add(manager);
+			}
+		}
+		result.setPermalinks(permalinkNumber);
+		result.setUsers(orcids.size());
+		return result;
 	}
 
 	

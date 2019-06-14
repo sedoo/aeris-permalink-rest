@@ -1,4 +1,4 @@
-package fr.aeris.permalink.rest.service;
+package fr.aeris.permalink.rest.service.v1_0.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
