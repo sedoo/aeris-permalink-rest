@@ -28,7 +28,7 @@ public class SwaggerConfig {
 			            return "/";
 			        }})
 				.select()                                  
-				.apis(RequestHandlerSelectors.any())              
+				.apis(RequestHandlerSelectors.basePackage( "fr.aeris" ))              
 				.paths(PathSelectors.any())           
 				.build();                                           
 	}
