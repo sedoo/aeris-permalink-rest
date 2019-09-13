@@ -27,7 +27,6 @@ import fr.aeris.permalink.rest.service.v1_0.exception.ForbiddenException;
 import fr.aeris.permalink.rest.service.v1_0.exception.ServiceOfferLimitReachedException;
 import fr.aeris.permalink.rest.service.v1_0.exception.UnexistingPermalinkException;
 
-
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/admin/v1_0")
@@ -42,13 +41,13 @@ public class PermalinkService {
 	public String isalive() {
 		return "yes";
 	}
-	
+
 	@RequestMapping(value = "/statistics", method = RequestMethod.GET)
 	public Statistics statistics() {
-		
+
 		return permalinkDao.getStatistics();
 	}
-	
+
 	@RequestMapping(value = "/offer", method = RequestMethod.GET)
 	public Offer offer() {
 		Offer result = new Offer();
@@ -56,29 +55,36 @@ public class PermalinkService {
 		return result;
 	}
 
-	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE})
+	@Secured({ Roles.ADMIN_ROLE, Roles.MANAGER_ROLE })
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public List<Permalink> listall(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user) {
+	public List<Permalink> listall(@RequestHeader("Authorization") String authHeader,
+			@AuthenticationPrincipal ApplicationUser user) {
 		if (user.isAdmin()) {
 			return permalinkDao.findAll();
-		}
-		else {
+		} else {
 			String orcid = user.getOrcid();
 			return permalinkDao.findAllByOrcid(orcid);
 		}
 	}
 
-	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE})
+	@RequestMapping(value = "/jwtInformations", method = RequestMethod.GET)
+	public ApplicationUser jwtInformations(@RequestHeader("Authorization") String authHeader,
+			@AuthenticationPrincipal ApplicationUser user) {
+		ApplicationUser result = new ApplicationUser(user.getOrcid());
+		return result;
+	}
+
+	@Secured({ Roles.ADMIN_ROLE, Roles.MANAGER_ROLE })
 	@RequestMapping(value = "/delete/{suffix}", method = RequestMethod.DELETE)
-	public void delete(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user, @PathVariable(name="suffix") String suffix) {
+	public void delete(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user,
+			@PathVariable(name = "suffix") String suffix) {
 		Permalink permalink = permalinkDao.findBySuffix(suffix);
 		if (permalink == null) {
 			throw new UnexistingPermalinkException();
 		}
 		if (user.isAdmin()) {
 			permalinkDao.deleteBySuffix(suffix);
-		}
-		else {
+		} else {
 			if (permalink.getManagerIds() == null) {
 				throw new ForbiddenException();
 			}
@@ -89,9 +95,11 @@ public class PermalinkService {
 		}
 	}
 
-	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE})
+	@Secured({ Roles.ADMIN_ROLE, Roles.MANAGER_ROLE })
 	@RequestMapping(value = "/addmanager/{suffix}/{orcid}", method = RequestMethod.GET)
-	public void addManager(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user, @PathVariable(name="suffix") String suffix, @PathVariable(name="orcid") String orcid) {
+	public void addManager(@RequestHeader("Authorization") String authHeader,
+			@AuthenticationPrincipal ApplicationUser user, @PathVariable(name = "suffix") String suffix,
+			@PathVariable(name = "orcid") String orcid) {
 		if ((StringUtils.isEmpty(suffix)) || (StringUtils.isEmpty(orcid))) {
 			throw new BadRequestException();
 		}
@@ -101,23 +109,22 @@ public class PermalinkService {
 			if (existingPermalink.isManagedBy(userOrcid)) {
 				existingPermalink.addManager(orcid);
 				permalinkDao.save(existingPermalink);
-			}
-			else if (user.isAdmin()) {
+			} else if (user.isAdmin()) {
 				existingPermalink.addManager(orcid);
 				permalinkDao.save(existingPermalink);
-			}
-			else {
+			} else {
 				throw new ForbiddenException();
 			}
-		}
-		else {
+		} else {
 			throw new UnexistingPermalinkException();
 		}
 	}
-	
-	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE})
+
+	@Secured({ Roles.ADMIN_ROLE, Roles.MANAGER_ROLE })
 	@RequestMapping(value = "/deletemanager/{suffix}/{orcid}", method = RequestMethod.GET)
-	public void deleteManager(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user, @PathVariable(name="suffix") String suffix, @PathVariable(name="orcid") String orcid) {
+	public void deleteManager(@RequestHeader("Authorization") String authHeader,
+			@AuthenticationPrincipal ApplicationUser user, @PathVariable(name = "suffix") String suffix,
+			@PathVariable(name = "orcid") String orcid) {
 		if ((StringUtils.isEmpty(suffix)) || (StringUtils.isEmpty(orcid))) {
 			throw new BadRequestException();
 		}
@@ -127,21 +134,20 @@ public class PermalinkService {
 			if (existingPermalink.isManagedBy(userOrcid)) {
 				existingPermalink.deleteManager(orcid);
 				permalinkDao.save(existingPermalink);
-			}
-			else {
+			} else {
 				throw new ForbiddenException();
 			}
-		}
-		else {
+		} else {
 			throw new UnexistingPermalinkException();
 		}
 	}
-	
-	
-	@Secured({Roles.ADMIN_ROLE, Roles.MANAGER_ROLE}) 
+
+	@Secured({ Roles.ADMIN_ROLE, Roles.MANAGER_ROLE })
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public void add(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user, @RequestBody Permalink permalink) {
-		if ((permalink == null) || (StringUtils.isEmpty(permalink.getSuffix())) || (StringUtils.isEmpty(permalink.getUrl()))) {
+	public void add(@RequestHeader("Authorization") String authHeader, @AuthenticationPrincipal ApplicationUser user,
+			@RequestBody Permalink permalink) {
+		if ((permalink == null) || (StringUtils.isEmpty(permalink.getSuffix()))
+				|| (StringUtils.isEmpty(permalink.getUrl()))) {
 			throw new BadRequestException();
 		}
 		String orcid = user.getOrcid();
@@ -150,28 +156,18 @@ public class PermalinkService {
 			if (existingPermalink.isManagedBy(orcid)) {
 				existingPermalink.setUrl(permalink.getUrl());
 				permalinkDao.save(existingPermalink);
-			}
-			else {
+			} else {
 				throw new ForbiddenException();
 			}
-		}
-		else {
+		} else {
 			List<Permalink> permalinks = permalinkDao.findAllByOrcid(orcid);
 			if (permalinks.size() >= PermalinkDao.USER_PERMALINK_LIMITS) {
 				throw new ServiceOfferLimitReachedException();
-			}	
-			else {
+			} else {
 				permalink.addManager(orcid);
 				permalinkDao.save(permalink);
 			}
 		}
 	}
-	
-	
-	
-
 
 }
-
-
-

@@ -29,17 +29,16 @@ import fr.aeris.permalink.rest.habilitation.Roles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 
-
 @Component
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-	
+
 	public final static String ORCID_KEY = "orcid";
 
 	@Autowired
 	AdminDao adminDao;
-	
+
 	@Autowired
 	JwtConfig jwtConfig;
 
@@ -57,50 +56,53 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 	 * @return null user if no correct information is available
 	 */
 	public ApplicationUser getUserFromAuthHeader(HttpServletRequest request) {
-		try{
-			String token;
-			try {
-				token = JwtUtil.getTokenFromAuthHeader(request);
-			}
-			catch (JwtException e) {
-				return null;
-			}
-			Claims claims = JwtUtil.getClaims(token, jwtConfig.getSigningKey());
+		try {
 
-			String orcid = claims.get(ORCID_KEY, String.class);
-			String name = claims.getSubject();
-			if (orcid != null){
-				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-				if (adminDao.isAdmin(orcid)) {
-					authorities.add(new SimpleGrantedAuthority(Roles.ADMIN_ROLE));	
-				} else {
-					authorities.add(new SimpleGrantedAuthority(Roles.MANAGER_ROLE));
+			ApplicationUser loggedUser = LoginUtils.getLoggedUser();
+			if (loggedUser != null) {
+				return loggedUser;
+			} else {
+				String token;
+				try {
+					token = JwtUtil.getTokenFromAuthHeader(request);
+				} catch (JwtException e) {
+					return null;
 				}
-				
-				return new ApplicationUser(orcid, name, authorities);
+				Claims claims = JwtUtil.getClaims(token, jwtConfig.getSigningKey());
+
+				String orcid = claims.get(ORCID_KEY, String.class);
+				String name = claims.getSubject();
+				if (orcid != null) {
+					List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+					if (adminDao.isAdmin(orcid)) {
+						authorities.add(new SimpleGrantedAuthority(Roles.ADMIN_ROLE));
+					} else {
+						authorities.add(new SimpleGrantedAuthority(Roles.MANAGER_ROLE));
+					}
+
+					return new ApplicationUser(orcid, name, authorities);
+				}
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			LOG.error("error reading token. Cause: " + e.getMessage());
-		}	
+		}
 		return null;
 	}
 
 	@Override
-	public void doFilter(ServletRequest request,
-			ServletResponse response,
-			FilterChain filterChain)
-					throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+			throws IOException, ServletException {
 
 		LOG.debug("doFilter(");
-		
-		ApplicationUser user = getUserFromAuthHeader((HttpServletRequest)request);
-				
+
+		ApplicationUser user = getUserFromAuthHeader((HttpServletRequest) request);
+
 		Authentication authentication = null;
-		if (user != null){
+		if (user != null) {
 			authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		filterChain.doFilter(request,response);
+		filterChain.doFilter(request, response);
 	}
 }
