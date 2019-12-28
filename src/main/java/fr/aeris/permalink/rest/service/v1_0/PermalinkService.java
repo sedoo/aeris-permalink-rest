@@ -155,6 +155,7 @@ public class PermalinkService {
 		if (existingPermalink != null) {
 			if (existingPermalink.isManagedBy(orcid)) {
 				existingPermalink.setUrl(permalink.getUrl());
+				existingPermalink.setManagerIds(permalink.getManagerIds());
 				permalinkDao.save(existingPermalink);
 			} else {
 				throw new ForbiddenException();

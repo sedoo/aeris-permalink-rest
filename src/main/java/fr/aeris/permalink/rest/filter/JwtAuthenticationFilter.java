@@ -2,13 +2,18 @@ package fr.aeris.permalink.rest.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +55,32 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		this.jwtConfig = jwtConfig;
 	}
 
+	private void extendTokenValidity(String token, HttpServletResponse response) {
+		response.addHeader(JwtUtil.AUTH_HEADER, token);
+	}
+
+	private String generateToken(String userName, Set<String> roles, String orcid) throws Exception {
+		Map<String, String> infos = new HashMap<>();
+		infos.put(ORCID_KEY, orcid);
+		String token = JwtUtil.generateToken(userName, jwtConfig.getSigningKey(), jwtConfig.getTokenValidity(), roles,
+				infos);
+		return token;
+	}
+
 	/**
 	 * 
 	 * @param request
 	 * @return null user if no correct information is available
 	 */
-	public ApplicationUser getUserFromAuthHeader(HttpServletRequest request) {
+	public ApplicationUser getUserFromAuthHeader(HttpServletRequest request, HttpServletResponse response) {
 		try {
 
-			ApplicationUser loggedUser = LoginUtils.getLoggedUser();
+			ApplicationUser loggedUser = null;
+			try {
+				loggedUser = LoginUtils.getLoggedUser();
+			} catch (Exception e) {
+
+			}
 			if (loggedUser != null) {
 				return loggedUser;
 			} else {
@@ -72,14 +94,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 				String orcid = claims.get(ORCID_KEY, String.class);
 				String name = claims.getSubject();
+				Set<String> roles = new HashSet<>();
 				if (orcid != null) {
 					List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 					if (adminDao.isAdmin(orcid)) {
 						authorities.add(new SimpleGrantedAuthority(Roles.ADMIN_ROLE));
+						roles.add(Roles.ADMIN_ROLE);
 					} else {
 						authorities.add(new SimpleGrantedAuthority(Roles.MANAGER_ROLE));
+						roles.add(Roles.MANAGER_ROLE);
 					}
-
+					extendTokenValidity(generateToken(name, roles, orcid), response);
 					return new ApplicationUser(orcid, name, authorities);
 				}
 			}
@@ -95,7 +120,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
 		LOG.debug("doFilter(");
 
-		ApplicationUser user = getUserFromAuthHeader((HttpServletRequest) request);
+		ApplicationUser user = getUserFromAuthHeader((HttpServletRequest) request, (HttpServletResponse) response);
 
 		Authentication authentication = null;
 		if (user != null) {
