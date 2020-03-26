@@ -9,8 +9,8 @@ spring:
       password: per001
 
 orcid:
-   clientId: APP-URDZNWTOU5HZVLEU
-   clientSecret: 76d964a8-1662-4adc-831e-9321210b279f
+   clientId: APP-XG6AYC3B6VAC1AAC
+   clientSecret: e43ccdce-9df8-4075-a6e4-01b9a069b791
    tokenUrl: https://orcid.org/oauth/token
    publicApiUrl: https://pub.orcid.org/v2.0
 

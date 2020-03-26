@@ -1,5 +1,7 @@
 package fr.aeris.permalink.rest.service.v1_0;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,12 +61,17 @@ public class PermalinkService {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public List<Permalink> listall(@RequestHeader("Authorization") String authHeader,
 			@AuthenticationPrincipal ApplicationUser user) {
+		List<Permalink> result = new ArrayList<Permalink>();
 		if (user.isAdmin()) {
-			return permalinkDao.findAll();
+			result = permalinkDao.findAll();
+
 		} else {
 			String orcid = user.getOrcid();
-			return permalinkDao.findAllByOrcid(orcid);
+			result = permalinkDao.findAllByOrcid(orcid);
 		}
+
+		Collections.sort(result, new SuffixComparator());
+		return result;
 	}
 
 	@RequestMapping(value = "/jwtInformations", method = RequestMethod.GET)
