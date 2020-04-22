@@ -7,6 +7,43 @@ spring:
       database: permalinks
       username: permalinks
       password: per001
+   application:
+        name: Permalinks
+   boot:
+       admin:
+           client:
+               url: http://127.0.0.1:9999      
+info:
+    code:
+        front: https://sourcesup.renater.fr/projects/aerispermalink
+        back: https://sourcesup.renater.fr/projects/permalinkvjs
+    hosting:
+        machine: SEDUR
+        folder: /data2/aeris/services
+    folders: none
+    database:
+        type: mongo
+        location: SEDUR
+    archive:
+        type: AWS S3
+
+        
+endpoints:
+    enabled: true
+    health:
+        enabled: true
+management:
+    endpoints:
+      web:
+        exposure:
+          include: "*"
+    endpoint:
+        health:
+            show-details: "ALWAYS"
+            northstar:
+                cacheup: 240
+                cachedown: 120
+
 
 orcid:
    clientId: APP-XG6AYC3B6VAC1AAC
@@ -31,8 +68,13 @@ spring:
 spring.profiles: prod
 backup:
     aws:
-        bucketName: aeris-permalink-bucket    
-  
+        bucketName: aeris-permalink-bucket
+#spring:
+#   boot:
+#       admin:
+#           client:
+#               url: https://monitoring.sedoo.fr
+#               instance.service-url: https://permalink.aeris-data.fr
 ---
 
 spring.profiles: test

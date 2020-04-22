@@ -26,8 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().authorizeRequests().antMatchers("/admin/**", "/login/**", "/token/**")
-				.permitAll().and().addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+		http.cors().and().csrf().disable().authorizeRequests()
+				.antMatchers("/actuator/**", "/admin/**", "/login/**", "/token/**").permitAll().and()
+				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Bean
