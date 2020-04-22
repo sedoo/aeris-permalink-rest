@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -22,13 +23,18 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		LOG.debug("configureMessageConverters()");
 
-		Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();//.modules(m);
+		Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();// .modules(m);
 		converters.add(new MappingJackson2HttpMessageConverter(builder.serializationInclusion(Include.ALWAYS).build()));
 	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
-		.allowedMethods( "GET", "PUT", "POST", "DELETE", "PATCH");
+		registry.addMapping("/**").allowedMethods("GET", "PUT", "POST", "DELETE", "PATCH");
 	}
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addRedirectViewController("/", "/swagger-ui.html");
+	}
+
 }
