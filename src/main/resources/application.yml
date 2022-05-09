@@ -7,42 +7,18 @@ spring:
       database: permalinks
       username: permalinks
       password: per001
-   application:
-        name: Permalinks
-   boot:
-       admin:
-           client:
-               url: http://127.0.0.1:9999      
 info:
     code:
         front: https://sourcesup.renater.fr/projects/aerispermalink
         back: https://sourcesup.renater.fr/projects/permalinkvjs
     hosting:
-        machine: SEDUR
-        folder: /data2/aeris/services
+        folder: ${application.folder}
     folders: none
     database:
         type: mongo
         location: SEDUR
     archive:
         type: AWS S3
-
-        
-endpoints:
-    enabled: true
-    health:
-        enabled: true
-management:
-    endpoints:
-      web:
-        exposure:
-          include: "*"
-    endpoint:
-        health:
-            show-details: "ALWAYS"
-            northstar:
-                cacheup: 240
-                cachedown: 120
 
 
 orcid:
@@ -66,15 +42,78 @@ spring:
 ---
 
 spring.profiles: prod
+
+springdoc:
+  swagger-ui:
+    configUrl: /${spring.application.name}/v3/api-docs/swagger-config
+    oauth2RedirectUrl: https://api.sedoo.fr/${spring.application.name}/swagger-ui/oauth2-redirect.html
+    url: /${spring.application.name}/v3/api-docs/
+  server.url:  https://api.sedoo.fr/${spring.application.name}
+
+spring:
+   data.mongodb:
+      host: sedur
+
+server.port: 0
+
 backup:
     aws:
         bucketName: aeris-permalink-bucket
-#spring:
-#   boot:
-#       admin:
-#           client:
-#               url: https://monitoring.sedoo.fr
-#               instance.service-url: https://permalink.aeris-data.fr
+eureka:
+  client:
+    serviceUrl:
+      defaultZone:  http://localhost:8761/eureka
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 5
+
+---
+
+spring:
+   profiles: monitoring
+   boot:
+       admin:
+           client:
+               url: https://monitoring.sedoo.fr
+               auto-deregistration: true
+
+info:
+  api: https://api.sedoo.fr/${spring.application.name}/swagger-ui/index.html
+  code:
+    front: none
+    back: Sourcesup
+  folders: none
+  database:
+    type: mongo
+    location: SEDUR
+  archive: none
+
+endpoints:
+    enabled: true
+    health:
+        enabled: true
+    info:
+        enabled: true  
+        
+        
+management.info.env.enabled: true
+  
+management:
+    endpoints:
+      web:
+        exposure:
+          include: "*"
+    endpoint:
+        info:
+            enabled: true
+        health:
+            show-details: "ALWAYS"
+            northstar:
+                cacheup: 240
+                cachedown: 120 
+
+
 ---
 
 spring.profiles: test

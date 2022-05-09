@@ -7,7 +7,7 @@ import fr.aeris.permalink.rest.domain.Statistics;
 
 public interface PermalinkDao {
 	
-	int USER_PERMALINK_LIMITS =100;
+	int USER_PERMALINK_LIMITS =1000;
 
 	List<Permalink> findAll();
 

@@ -4,3 +4,6 @@ switched to db permalinks
 Successfully added user: { "user" : "permalinks", "roles" : [ "readWrite", "dbAdmin" ] }
 > exit
 bye
+
+
+db.createUser({user: "permalinks", pwd: "per001",roles: [ { role: "userAdmin", db: "permalinks"} ]})

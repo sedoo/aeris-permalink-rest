@@ -11,8 +11,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,8 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.aeris.permalink.rest.config.AwsConfig;
 import fr.aeris.permalink.rest.dao.PermalinkDao;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class AwsBackup {
 
 	private static final String DATE_FORMAT = "yyyy_dd_MM";
@@ -39,7 +39,6 @@ public class AwsBackup {
 	@Autowired
 	AwsConfig awsConfig;
 
-	private Logger logger = LoggerFactory.getLogger(AwsBackup.class);
 	private int CONSERVATION_DURATION_DAY = 30;
 
 	@PostConstruct
@@ -82,7 +81,7 @@ public class AwsBackup {
 
 		}
 		catch (Exception e) {
-			logger.error("An error has occured while backuping: "+e.getMessage());
+			log.error("An error has occured while backuping: "+e.getMessage());
 		}
 		finally {
 			if (backupFile != null) {

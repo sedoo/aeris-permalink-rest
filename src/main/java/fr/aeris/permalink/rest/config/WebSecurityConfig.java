@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		final CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Collections.singletonList("*"));
+		configuration.setAllowedOrigins(Collections.singletonList("https://www.sedoo.fr"));
 		configuration.addAllowedMethod("GET");
 		configuration.addAllowedMethod("POST");
 		configuration.addAllowedMethod("PUT");
