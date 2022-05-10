@@ -155,7 +155,7 @@
 						</goals>
 						<configuration>
 							<executable>curl</executable>
-							<commandlineArgs>--request POST --header 'Content-Type: multipart/form-data' -F 'file=@./target/${project.artifactId}-${project.version}.jar' http://services.aeris-data.fr/cdn/jarrepo/v1_0/upload?prefix=${prefix}</commandlineArgs>
+							<commandlineArgs>--request POST --header 'Content-Type: multipart/form-data' -F 'file=@./target/${project.artifactId}-${project.version}.jar' https://services.aeris-data.fr/cdn/jarrepo/v1_0/upload?prefix=${prefix}</commandlineArgs>
 						</configuration>
 					</execution>
 				</executions>
