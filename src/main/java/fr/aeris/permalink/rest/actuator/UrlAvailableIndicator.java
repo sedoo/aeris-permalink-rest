@@ -6,7 +6,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,7 +36,13 @@ public class UrlAvailableIndicator implements HealthIndicator {
     		}
     		RestTemplate restTemplate = new RestTemplate();
     		try {
-    			restTemplate.headForHeaders(url);
+    			HttpHeaders headers = new HttpHeaders();
+
+    			headers.add("user-agent", "Mozilla/5.0 Firefox/26.0");
+    			HttpEntity<String> entity = new HttpEntity<>("", headers);
+    			HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+    			
+    			restTemplate.exchange(url, HttpMethod.HEAD, requestEntity, String.class);
     		} catch (Exception e) {
     			log.error("UNAVAILABLE URL: "+url+ "for suffix "+permalink.getSuffix());
     			isUp = false;
@@ -49,10 +57,4 @@ public class UrlAvailableIndicator implements HealthIndicator {
         return Health.up().withDetail("all url accessible", "Yes").build();
     }
 
-    private Boolean isRunningServiceA() {
-        Boolean isRunning = true;
-        // Logic Skipped
-
-        return isRunning;
-    }
 }
