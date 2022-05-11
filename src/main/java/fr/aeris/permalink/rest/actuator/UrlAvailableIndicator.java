@@ -36,7 +36,7 @@ public class UrlAvailableIndicator implements HealthIndicator {
     		try {
     			restTemplate.headForHeaders(url);
     		} catch (Exception e) {
-    			log.error("UNAVAILABLE URL: "+url);
+    			log.error("UNAVAILABLE URL: "+url+ "for suffix "+permalink.getSuffix());
     			isUp = false;
     			break;
     		}
