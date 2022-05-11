@@ -22,15 +22,15 @@ info:
 
 
 orcid:
-   clientId: ENC(MiZjpnEBwTdGQ5ReVY9RitTePzkT7wDZluojqDumr7U=)
-   clientSecret: ENC(/W7HGnGvT8702mz23bGBlg/BosDa9Yr1Iin0iNMIIoJHbXb28Fze8kxTe46U+xRA)
+   clientId: ENC(ho/tNC0FvJaDoT+Pq8Teu4MeqmVdrxpAu4qvtCNidVQ=)
+   clientSecret: ENC(SAykHfVrFqxRqwcMvmQPYz3sUTsk0IkYEGkX9GV0DsrkFCd+TeFQs4m529NqdCke)
    tokenUrl: https://orcid.org/oauth/token
    publicApiUrl: https://pub.orcid.org/v2.0
 
 backup:
     aws:
-        accessKey: ENC(3uogizHH5YbhHdVZf9dBDblDU2Wa0uoqIHuRaZsZT3Q)
-        secretKey: ENC(eI2rgLoIqKYk7lS/gdiErXCBedFCtPD1XgWAruUU1lHe3Brc64Pzgq9YWrGS8L7Y1uEm+Sn8GGQ=)
+        accessKey: ENC(96G3QceB/Gu4RItmwRpXHRN4EWP66K23xt3lxxNXoW0=)
+        secretKey: ENC(9+iauLGAWEm5l3hqkmVjSWDx/lCe7wSrusxAQWph448MQdPsWih4FUTvwpwBrvBCyx09ZDITPR4=)
         bucketName: aeris-permalink-test-bucket
 ---
 
