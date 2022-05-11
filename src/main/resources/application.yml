@@ -6,7 +6,7 @@ spring:
       port: 27017
       database: permalinks
       username: permalinks
-      password: per001
+      password: ENC(2vpqTI2CaFyi0zUVaODZ3w==)
 info:
     code:
         front: https://sourcesup.renater.fr/projects/aerispermalink
@@ -22,22 +22,22 @@ info:
 
 
 orcid:
-   clientId: APP-XG6AYC3B6VAC1AAC
-   clientSecret: e43ccdce-9df8-4075-a6e4-01b9a069b791
+   clientId: ENC(MiZjpnEBwTdGQ5ReVY9RitTePzkT7wDZluojqDumr7U=)
+   clientSecret: ENC(/W7HGnGvT8702mz23bGBlg/BosDa9Yr1Iin0iNMIIoJHbXb28Fze8kxTe46U+xRA)
    tokenUrl: https://orcid.org/oauth/token
    publicApiUrl: https://pub.orcid.org/v2.0
 
 backup:
     aws:
-        accessKey: AKIAR52KNJY7MR2JM6FR
-        secretKey: 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
+        accessKey: ENC(3uogizHH5YbhHdVZf9dBDblDU2Wa0uoqIHuRaZsZT3Q)
+        secretKey: ENC(eI2rgLoIqKYk7lS/gdiErXCBedFCtPD1XgWAruUU1lHe3Brc64Pzgq9YWrGS8L7Y1uEm+Sn8GGQ=)
         bucketName: aeris-permalink-test-bucket
 ---
 
 spring.profiles: distant-prod
 spring:
    data.mongodb:
-      host: 193.52.225.51
+      port: 27018
       
 ---
 
