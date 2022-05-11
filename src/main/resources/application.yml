@@ -93,7 +93,7 @@ endpoints:
     enabled: true
     health:
         enabled: true
-        cache.time-to-live=86400s
+        cache.time-to-live: 86400s
     info:
         enabled: true  
         

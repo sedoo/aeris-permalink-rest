@@ -12,10 +12,11 @@ import org.springframework.web.client.RestTemplate;
 
 import fr.aeris.permalink.rest.dao.PermalinkDao;
 import fr.aeris.permalink.rest.domain.Permalink;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class UrlAvailableIndicator implements HealthIndicator {
-        private final String message_key = "Service A";
         
     @Autowired
     PermalinkDao permalinkDao;
@@ -35,6 +36,7 @@ public class UrlAvailableIndicator implements HealthIndicator {
     		try {
     			restTemplate.headForHeaders(url);
     		} catch (Exception e) {
+    			log.error("UNAVAILABLE URL: "+url);
     			isUp = false;
     			break;
     		}
