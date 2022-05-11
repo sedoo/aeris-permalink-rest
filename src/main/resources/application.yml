@@ -93,8 +93,8 @@ endpoints:
     enabled: true
     health:
         enabled: true
-        time-to-live: 86400s
-        cache.time-to-live: 86400s
+        time-to-live: 86400000
+        cache.time-to-live: 86400000
     info:
         enabled: true  
         
@@ -110,8 +110,8 @@ management:
         info:
             enabled: true
         health:
-            time-to-live: 86400s
-            cache.time-to-live: 86400s
+            time-to-live: 86400000
+            cache.time-to-live: 86400000
             show-details: "ALWAYS"
             northstar:
                 cacheup: 240

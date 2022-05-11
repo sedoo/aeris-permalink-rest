@@ -25,7 +25,7 @@ public class UrlAvailableIndicator implements HealthIndicator {
         
     @Override
     public Health health() {
-    	
+    	log.info("Computing UrlAvailableIndicator");
     	List<Permalink> findAll = permalinkDao.findAll();
     	boolean isUp = true;
     	for (Permalink permalink : findAll) {
