@@ -25,7 +25,7 @@ public class StatisticsInfoContributor implements InfoContributor {
 
 		details.put("users", "" + statistics.getUsers());
 		details.put("permalinks", "" + statistics.getPermalinks());
-		builder.withDetail("Unavailable urls", details);
+		builder.withDetail("Statistics", details);
 
 	}
 }

@@ -31,11 +31,17 @@ public class UnavailableUrlContributor implements InfoContributor {
 		
 		Map<String, String> urls = new HashMap<>();
 		
-		for (Permalink	permalink: healthIndicator.getUnavailablePermalinks()) {
-			urls.put(permalink.getSuffix(), permalink.getUrl());
+		if (healthIndicator.getUnavailablePermalinks().size()>0) {
+			for (Permalink	permalink: healthIndicator.getUnavailablePermalinks()) {
+				urls.put(permalink.getSuffix(), permalink.getUrl());
+			}
+			details.put("broken permalinks", urls);
+		} else {
+			details.put("broken permalinks", "None");
 		}
 		
-		details.put("broken permalinks", "" + urls);
+		
+		
 		builder.withDetail("Unavailable Urls", details);
 
 	}
