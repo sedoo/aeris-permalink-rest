@@ -40,8 +40,6 @@ public class UnavailableUrlContributor implements InfoContributor {
 			details.put("broken permalinks", "None");
 		}
 		
-		
-		
 		builder.withDetail("Unavailable Urls", details);
 
 	}
