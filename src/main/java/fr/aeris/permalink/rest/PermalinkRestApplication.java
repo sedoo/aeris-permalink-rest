@@ -18,8 +18,6 @@ public class PermalinkRestApplication {
 		SpringApplication.run(PermalinkRestApplication.class, args);
 	}
 	
-	
-	
 }
 
 

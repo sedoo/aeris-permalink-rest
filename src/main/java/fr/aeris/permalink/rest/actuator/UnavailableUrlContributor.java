@@ -24,7 +24,7 @@ public class UnavailableUrlContributor implements InfoContributor {
 
 		String date ="-"; 
 		if (healthIndicator.getLastCheck() != null) {
-			SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			date = formater.format(healthIndicator.getLastCheck());
 		}
 		details.put("last check", date);
@@ -37,7 +37,7 @@ public class UnavailableUrlContributor implements InfoContributor {
 			}
 			details.put("broken permalinks", urls);
 		} else {
-			details.put("broken permalinks", "None");
+			details.put("broken permalinks", "0");
 		}
 		
 		builder.withDetail("Unavailable Urls", details);

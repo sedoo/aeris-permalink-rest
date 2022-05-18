@@ -62,7 +62,7 @@ backup:
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://localhost:8761/eureka
+      defaultZone:  http://toodur:8761/eureka
   instance:
     preferIpAddress: true
     lease-renewal-interval-in-seconds: 3
